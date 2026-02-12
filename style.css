@@ -1,0 +1,162 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: #0f172a;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard {
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+@media (min-aspect-ratio: 16/10) {
+    .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+    }
+}
+
+@media (max-aspect-ratio: 16/10) {
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+}
+
+.card {
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(6px);
+    transition: all 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.temperatura {
+  font-size: 34px;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: inline-block;
+  color: white;
+}
+.temp-quente { background: #e53935; }
+.temp-frio { background: #1e88e5; }
+.temp-normal { background: #555; }
+
+/* Fundos */
+.dia {
+    background: linear-gradient(to bottom, #0aabf6, #828c8d);
+}
+
+.noite {
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+}
+
+.por-do-sol {
+    background: linear-gradient(to bottom, #ff9966, #ff5e62, #2c3e50);
+}
+
+.alerta-chuva {
+    background: linear-gradient(to bottom, #1e3a8a, #2563eb);
+}
+
+.alerta-calor {
+    background: linear-gradient(to bottom, #7f1d1d, #dc2626);
+}
+
+
+@keyframes girar {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estrelas */
+.estrelas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("https://i.imgur.com/9QZ7Q8B.png") repeat;
+    opacity: 0.3;
+    animation: piscar 3s infinite alternate;
+}
+
+@keyframes piscar {
+    from {
+        opacity: 0.2;
+    }
+
+    to {
+        opacity: 0.5;
+    }
+}
+
+/* Chuva */
+.chuva::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(transparent 70%, rgba(255, 255, 255, 0.5) 70%);
+    background-size: 3px 20px;
+    animation: cair 0.5s linear infinite;
+}
+
+@keyframes cair {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 20px;
+    }
+}
+
+/* Relâmpago */
+.relampago::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    animation: flash 6s infinite;
+}
+
+@keyframes flash {
+
+    0%,
+    95%,
+    100% {
+        opacity: 0;
+    }
+
+    96% {
+        opacity: 0.9;
+    }
+
+    97% {
+        opacity: 0;
+    }
+}
+
+.temp {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+canvas {
+    max-height: 120px !important;
+}

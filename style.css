@@ -1,6 +1,7 @@
 body {
     margin: 0;
     height: 100vh;
+    height: 100dvh;
     background: radial-gradient(circle at 50% 0%, #1e293b, #0b1120 60%);
     overflow: hidden;
     font-family: Arial, sans-serif;
@@ -9,30 +10,24 @@ body {
 .dashboard {
     display: grid;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
-    gap: clamp(6px, 1vw, 12px);
-    padding: clamp(6px, 1vw, 12px);
+    gap: clamp(5px, 0.8vw, 10px);
+    padding: clamp(5px, 0.8vw, 10px);
     box-sizing: border-box;
 }
 
-@media (min-aspect-ratio: 16/10) {
+@media (min-width: 600px) {
     .dashboard {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
     }
 }
 
-@media (max-aspect-ratio: 16/10) {
+@media (max-width: 599px) {
     .dashboard {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 450px) {
-    .dashboard {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(6, 1fr);
     }
 }
 

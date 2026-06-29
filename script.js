@@ -15,25 +15,30 @@ function classeTemp(t) {
     return "temp-normal";
 }
 
-function interpretarClima(condicao, precip, uv, umidade) {
+function interpretarClima(condicao, precip, isDay) {
     const c = condicao.toLowerCase();
 
-    if (c.includes("thunder")) return { texto: "⚡ Tempestade com trovoadas", anim: "relampago chuva" };
-    if (c.includes("heavy rain")) return { texto: "🌧 Chuva intensa", anim: "chuva" };
-    if (c.includes("moderate rain")) return { texto: "🌧 Chuva moderada", anim: "chuva" };
-    if (c.includes("light rain")) return { texto: "🌦 Chuva leve", anim: "chuva" };
-    if (c.includes("overcast")) return { texto: `☁ Céu encoberto | Umidade ${umidade}%`, anim: "" };
-    if (c.includes("cloudy")) return { texto: `☁ Muitas nuvens | Umidade ${umidade}%`, anim: "" };
-    if (c.includes("partly")) return { texto: `⛅ Poucas nuvens | Umidade ${umidade}%`, anim: "" };
+    if (c.includes("thunder")) return { texto: "Tempestade com trovoadas", icone: "⛈️" };
+    if (c.includes("heavy rain")) return { texto: "Chuva intensa", icone: "🌧️" };
+    if (c.includes("moderate rain")) return { texto: "Chuva moderada", icone: "🌧️" };
+    if (c.includes("light rain")) return { texto: "Chuva leve", icone: "🌦️" };
+    if (c.includes("overcast")) return { texto: "Céu encoberto", icone: "☁️" };
+    if (c.includes("cloudy")) return { texto: "Muitas nuvens", icone: "☁️" };
+    if (c.includes("partly")) return { texto: "Poucas nuvens", icone: isDay ? "⛅" : "🌙☁️" };
     if (c.includes("clear") || c.includes("sunny"))
-        return { texto: `☀ Ensolarado | UV ${uv}`, anim: "sol" };
+        return { texto: "Ensolarado", icone: isDay ? "☀️" : "🌙" };
 
-    if (precip > 0) return { texto: "🌧 Chuva", anim: "chuva" };
+    if (precip > 0) return { texto: "Chuva", icone: "🌧️" };
 
-    return { texto: "🌡 Clima estável", anim: "" };
+    return { texto: "Clima estável", icone: isDay ? "🌤️" : "🌙" };
 }
 
-cidades.forEach(cidade => carregarClima(cidade));
+function atualizarTudo() {
+    cidades.forEach(cidade => carregarClima(cidade));
+}
+
+atualizarTudo();
+setInterval(atualizarTudo, 60 * 1000);
 
 async function carregarClima(cidade) {
     const resp = await fetch(
@@ -43,12 +48,6 @@ async function carregarClima(cidade) {
 
     const atual = dados.current;
     const dia = dados.forecast.forecastday[0].day;
-    const agora = new Date().getHours();
-
-    const forecastHoras = dados.forecast.forecastday[0].hour
-        .filter(h => parseInt(h.time.split(" ")[1]) >= agora)
-        .slice(0, 6);
-
     const card = document.getElementById(cidade.id);
     card.className = "card";
 
@@ -56,51 +55,30 @@ async function carregarClima(cidade) {
     const clima = interpretarClima(
         atual.condition.text,
         atual.precip_mm,
-        atual.uv,
-        atual.humidity
+        atual.is_day
     );
 
     if (atual.is_day) card.classList.add("dia");
-    else card.classList.add("noite", "estrelas");
+    else card.classList.add("noite");
 
     /*if (chanceChuva > 60) card.classList.add("alerta-chuva");
     if (atual.feelslike_c > 35) card.classList.add("alerta-calor");*/
 
-    if (clima.anim) {
-        clima.anim.split(" ").forEach(a => card.classList.add(a));
-    }
-
     card.innerHTML = `
     <div>
       <h3>${cidade.nome}</h3>
-      <div class="temperatura ${classeTemp(atual.temp_c)}">
-        ${atual.temp_c}°C
+      <div class="card-info">
+        <div class="temperatura-box ${classeTemp(atual.temp_c)}">
+          <span class="icone-clima">${clima.icone}</span>
+          <span>${atual.temp_c}°C</span>
+        </div>
+        <div class="detalhes">
+          <div>${clima.texto}</div>
+          <div>Umidade: ${atual.humidity}%</div>
+          <div>Sensação: ${atual.feelslike_c}°C</div>
+          <div>Chance de chuva: ${chanceChuva}%</div>
+        </div>
       </div>
-      <div>${clima.texto}</div>
-      <div>Sensação: ${atual.feelslike_c}°C</div>
-      <div>Chance de chuva: ${chanceChuva}%</div>
     </div>
-    <canvas id="grafico-${cidade.id}"></canvas>
   `;
-
-    new Chart(document.getElementById(`grafico-${cidade.id}`), {
-        type: "line",
-        data: {
-            labels: forecastHoras.map(h => h.time.split(" ")[1]),
-            datasets: [{
-                data: forecastHoras.map(h => h.temp_c),
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: "white" } },
-                y: { display: false }
-            }
-        }
-    });
 }
